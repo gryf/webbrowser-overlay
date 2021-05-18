@@ -218,9 +218,6 @@ src_install() {
 	# Disable MPROTECT for startup cache creation:
 	pax-mark m "${obj_dir}"/dist/bin/xpcshell
 
-	# Set the backspace behaviour to be consistent with the other platforms:
-	set_pref "browser.backspace_action" 0
-
 	# Gotta create the package, unpack it and manually install the files
 	# from there not to miss anything (e.g. the statusbar extension):
 	einfo "Creating the package..."
@@ -229,7 +226,7 @@ src_install() {
 	mkdir -p "${extracted_dir}"
 	cd "${extracted_dir}"
 	einfo "Extracting the package..."
-	tar xjpf "${S}/${obj_dir}/dist/${P}.linux-${CTARGET_default%%-*}.tar.bz2"
+	tar xjpf "${S}/${obj_dir}/dist/${P}.linux-${CTARGET_default%%-*}-2.tar.bz2"
 	einfo "Installing the package..."
 	local dest_libdir="/usr/$(get_libdir)"
 	mkdir -p "${D}/${dest_libdir}"
