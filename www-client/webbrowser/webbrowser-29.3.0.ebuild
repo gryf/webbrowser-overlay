@@ -218,6 +218,9 @@ src_install() {
 	# Disable MPROTECT for startup cache creation:
 	pax-mark m "${obj_dir}"/dist/bin/xpcshell
 
+	# Set the backspace behaviour to be consistent with the other platforms:
+	set_pref "browser.backspace_action" 0
+
 	# Gotta create the package, unpack it and manually install the files
 	# from there not to miss anything (e.g. the statusbar extension):
 	einfo "Creating the package..."
