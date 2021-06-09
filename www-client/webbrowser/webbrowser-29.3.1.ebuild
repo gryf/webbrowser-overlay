@@ -2,9 +2,9 @@ EAPI=7
 
 REQUIRED_BUILDSPACE='16G'
 
-inherit webbrowser-1 git-r3 flag-o-matic pax-utils desktop
+inherit webbrowser-1 git-r3 flag-o-matic pax-utils desktop toolchain-funcs
 
-KEYWORDS="~x86 ~amd64"
+KEYWORDS="~x86 ~amd64 ~ppc64"
 DESCRIPTION="Webbrowser - fork of Pale Moon"
 HOMEPAGE="https://git.nuegia.net/webbrowser.git"
 
@@ -91,9 +91,22 @@ src_configure() {
 	mozconfig_enable alsa
 
 	if use optimize; then
-		O='-O2 -pipe -ftree-parallelize-loops=4 -lgomp -fopenmp -msse2 -mfpmath=sse'
+		if use x86 || use amd64; then
+			O='-O2 -pipe -ftree-parallelize-loops=4 -lgomp -fopenmp -msse2 -mfpmath=sse'
+		elif use ppc64; then
+			# Big endian ppc64 builds not tested, it is included here for completeness
+			if [[ $(tc-endian) == "big" ]] ; then
+				#970 is the lowest common denominator for 64 bit big endian PPC64
+				O='-O2 -pipe -ftree-parallelize-loops=4 -lgomp -fopenmp -mcpu=970 -maltivec'
+			else
+				# POWER8 is the lowest common denominator for 64 bit little endian PPC64
+				O='-O2 -pipe -ftree-parallelize-loops=4 -lgomp -fopenmp -mcpu=power8 -maltivec'
+			fi
+		fi
+
 		mozconfig_enable "optimize=\"${O}\""
 		filter-flags '-O*' '-msse2' '-mfpmath=sse'
+
 	else
 		mozconfig_disable optimize
 	fi
@@ -172,6 +185,11 @@ src_configure() {
 		mozconfig_enable webrtc
 	else
 		mozconfig_disable webrtc
+	fi
+
+	# skia has no support for big-endian platforms
+	if [[ $(tc-endian) == "big" ]] ; then
+		mozconfig_annotate 'big endian target' --disable-skia
 	fi
 
 	# Enabling this causes xpcshell to hang during the packaging process,
