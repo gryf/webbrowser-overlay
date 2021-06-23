@@ -247,7 +247,7 @@ src_install() {
 	mkdir -p "${extracted_dir}"
 	cd "${extracted_dir}"
 	einfo "Extracting the package..."
-	tar xjpf "${S}/${obj_dir}/dist/${P}.linux-${CTARGET_default%%-*}-2.tar.bz2"
+	tar xjpf "${S}/${obj_dir}/dist/${P}.linux-${CTARGET_default%%-*}-3.tar.bz2"
 	einfo "Installing the package..."
 	local dest_libdir="/usr/$(get_libdir)"
 	mkdir -p "${D}/${dest_libdir}"
